@@ -22,6 +22,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     print('usersFetched');
   }
 
+  int number = 5;
+
   void _fetchUsers() async {
     // final snapshot = await FirebaseDatabase.instance.ref('TvWebApp').get();
 
@@ -47,8 +49,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               )),
               onTap: () {
                 print(child.key ?? '');
-
-                // databaseReference.push().set({"id": "newnew", "nmbr": 3});
+                number++;
+                databaseReference.push().set({"id": "newnew $number", "nmbr": number});
                 // databaseReference.child(child.key.toString()).remove();
                 /*setState(() {
                   _fetchUsers();
@@ -115,28 +117,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               alignment: Alignment.centerLeft,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                              child: DataTable(
-                                  dataRowColor: MaterialStateProperty.all<Color>(Colors.grey.shade50),
-                                  headingRowColor: MaterialStateProperty.all<Color>(Colors.white),
-                                  headingRowHeight: 30,
-                                  dataRowHeight: 30,
-                                  columns: [
-                                    DataColumn(
-                                      label: columnText('No.'),
-                                      numeric: true,
-                                    ),
-                                    DataColumn(
-                                      label: columnText('Device IDs'),
-                                    ),
-                                    DataColumn(
-                                      label: columnText('Actions'),
-                                    ),
-                                  ],
-                                  rows: rowList),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: ConstrainedBox(
+                                  constraints:
+                                      BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                                  child: DataTable(
+                                      dataRowColor: MaterialStateProperty.all<Color>(Colors.grey.shade50),
+                                      headingRowColor: MaterialStateProperty.all<Color>(Colors.white),
+                                      headingRowHeight: 30,
+                                      dataRowHeight: 30,
+                                      columns: [
+                                        DataColumn(
+                                          label: columnText('No.'),
+                                          numeric: true,
+                                        ),
+                                        DataColumn(
+                                          label: columnText('Device IDs'),
+                                        ),
+                                        DataColumn(
+                                          label: columnText('Actions'),
+                                        ),
+                                      ],
+                                      rows: rowList),
+                                ),
+                              ),
                             ),
                           ),
                         ],
