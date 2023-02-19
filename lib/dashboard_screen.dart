@@ -10,9 +10,16 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  String currentText = "Users";
+  String currentText = TEXT_USERS;
+
+  bool isLoading = true;
 
   List<DataRow> rowList = [];
+  List<DataColumn> columnList = [];
+  int number = 0;
+
+  bool isAddButtonVisible = false;
+  String addButtonText = 'null';
 
   @override
   void initState() {
@@ -22,12 +29,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
     print('usersFetched');
   }
 
-  int number = 5;
-
   void _fetchUsers() async {
     // final snapshot = await FirebaseDatabase.instance.ref('TvWebApp').get();
+    isLoading = true;
+    columnList.clear();
+    currentText = TEXT_USERS;
 
-    databaseReference.onValue.listen((event) {
+    isAddButtonVisible = false;
+
+    columnList.add(DataColumn(label: columnText('No.')));
+    columnList.add(DataColumn(label: columnText('Device IDs')));
+    columnList.add(DataColumn(label: columnText('Actions')));
+
+    databaseReference.child(CHILD_USERS).onValue.listen((event) {
+      if (currentText != TEXT_USERS) return;
+
       rowList.clear();
       for (final child in event.snapshot.children) {
         final map = child.value as Map<dynamic, dynamic>;
@@ -49,8 +65,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               )),
               onTap: () {
                 print(child.key ?? '');
-                number++;
-                databaseReference.push().set({"id": "newnew $number", "nmbr": number});
+                // number++;
+                // databaseReference
+                //     .child(CHILD_TOKENS)
+                //     .push()
+                //     .set({"id": number, "url": "https://tokenurl$number.com/token.php"});
                 // databaseReference.child(child.key.toString()).remove();
                 /*setState(() {
                   _fetchUsers();
@@ -63,28 +82,626 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
         rowList.add(user);
       }
-      setState(() {});
+      setState(() {
+        isLoading = false;
+      });
     }, onError: (error) {
       print(error);
     });
+  }
 
-    /*final map = snapshot.value as Map<dynamic, dynamic>;
+  void _fetchTokens() async {
+    // final snapshot = await FirebaseDatabase.instance.ref('TvWebApp').get();
+    isLoading = true;
+    columnList.clear();
+    currentText = TEXT_TOKENS;
 
-    map.forEach((key, value) {
-      print(value.toString());
-      print(value.length);
+    addButtonText = 'Add Tokens';
+    isAddButtonVisible = true;
 
-      // });
-    });
+    columnList.add(DataColumn(label: columnText('ID')));
+    columnList.add(DataColumn(label: columnText('Urls')));
+    columnList.add(DataColumn(label: columnText('Actions')));
 
-    print(_currentList.length);
-    print(rowList.length);
+    databaseReference.child(CHILD_TOKENS).onValue.listen((event) {
+      if (currentText != TEXT_TOKENS) return;
 
-    setState(() {
       rowList.clear();
-      rowList = _currentList;
-      print(rowList.length);
-    });*/
+      for (final child in event.snapshot.children) {
+        final map = child.value as Map<dynamic, dynamic>;
+
+        print(child.value);
+        print(map['id']);
+        print(map['url']);
+
+        final user = DataRow(cells: <DataCell>[
+          DataCell(Center(child: Text(map['id'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['url'].toString() ?? ''))),
+          DataCell(
+            Center(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                InkWell(
+                  child: Icon(
+                    Icons.edit_outlined,
+                    color: Colors.blue,
+                    size: 20,
+                  ),
+                  onTap: () {
+                    print(child.key ?? '');
+                    /* number++;
+                    databaseReference.child(CHILD_CHANNELS).push().set({
+                      "id": number,
+                      "name": "Name $number",
+                      "category": "Category $number",
+                      "country": "Country $number",
+                      "isHidden": false,
+                      "image_url": "https://url$number.com",
+                      "streaming_link": "data $number",
+                    });*/
+                    // databaseReference.child(child.key.toString()).remove();
+                    /*setState(() {
+                  _fetchUsers();
+                });*/
+                    // rowList.remove(map[key]);
+                  },
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                InkWell(
+                  child: Icon(
+                    Icons.delete_outlined,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                  onTap: () {
+                    print(child.key ?? '');
+                    // number++;
+                    // databaseReference.child(CHILD_TOKENS)
+                    //     .push().set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                    // databaseReference.child(child.key.toString()).remove();
+                    /*setState(() {
+                  _fetchUsers();
+                });*/
+                    // rowList.remove(map[key]);
+                  },
+                ),
+              ],
+            )),
+          ),
+        ]);
+
+        rowList.add(user);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }, onError: (error) {
+      print(error);
+    });
+  }
+
+  void _fetchChannels() async {
+    // final snapshot = await FirebaseDatabase.instance.ref('TvWebApp').get();
+    isLoading = true;
+    columnList.clear();
+    currentText = TEXT_VIEW_ALL_CHANNELS;
+
+    addButtonText = 'Add Channel';
+    isAddButtonVisible = true;
+
+    columnList.add(DataColumn(label: columnText('ID')));
+    columnList.add(DataColumn(label: columnText('Name')));
+    columnList.add(DataColumn(label: columnText('Category')));
+    columnList.add(DataColumn(label: columnText('Country')));
+    columnList.add(DataColumn(label: columnText('Hidden')));
+    columnList.add(DataColumn(label: columnText('Image')));
+    columnList.add(DataColumn(label: columnText('Streaming Links')));
+    columnList.add(DataColumn(label: columnText('Actions')));
+
+    databaseReference.child(CHILD_CHANNELS).onValue.listen((event) {
+      if (currentText != TEXT_VIEW_ALL_CHANNELS) return;
+
+      rowList.clear();
+      for (final child in event.snapshot.children) {
+        final map = child.value as Map<dynamic, dynamic>;
+
+        print(child.value);
+        print(map['id']);
+        print(map['name']);
+        print(map['category']);
+        print(map['country']);
+        print(map['isHidden']);
+        print(map['image_url']);
+        print(map['streaming_link']);
+
+        //"id": number,
+        //                       "name": "Name $number",
+        //                       "category": "Category $number",
+        //                       "country": "Country $number",
+        //                       "isHidden": false,
+        //                       "image_url": "https://url$number.com",
+        //                       "streaming_link": "data $number",
+
+        final user = DataRow(cells: <DataCell>[
+          DataCell(Center(child: Text(map['id'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['name'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['category'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['country'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['isHidden'].toString() ?? ''))),
+          DataCell(Center(
+              child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Image.network(
+              'https://picsum.photos/250?image=9', //map['image_url'].toString() ?? '',
+              width: 70,
+              height: 70,
+            ),
+          ))),
+          DataCell(
+            Center(
+                child: InkWell(
+              child: Icon(
+                Icons.remove_red_eye_outlined,
+                color: Colors.green,
+                size: 20,
+              ),
+              onTap: () {
+                print(map['streaming_link'].toString() ?? '');
+                // number++;
+                // databaseReference.child(CHILD_TOKENS)
+                //     .push().set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                // databaseReference.child(child.key.toString()).remove();
+                /*setState(() {
+                  _fetchUsers();
+                });*/
+                // rowList.remove(map[key]);
+              },
+            )),
+          ),
+          DataCell(
+            Center(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                InkWell(
+                  child: Icon(
+                    Icons.edit_outlined,
+                    color: Colors.blue,
+                    size: 20,
+                  ),
+                  onTap: () {
+                    print(child.key ?? '');
+                    // number++;
+                    // databaseReference.child(CHILD_TOKENS)
+                    //     .push().set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                    // databaseReference.child(child.key.toString()).remove();
+                    /*setState(() {
+                  _fetchUsers();
+                });*/
+                    // rowList.remove(map[key]);
+                  },
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                InkWell(
+                  child: Icon(
+                    Icons.delete_outlined,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                  onTap: () {
+                    print(child.key ?? '');
+                    // number++;
+                    // databaseReference.child(CHILD_TOKENS)
+                    //     .push().set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                    // databaseReference.child(child.key.toString()).remove();
+                    /*setState(() {
+                  _fetchUsers();
+                });*/
+                    // rowList.remove(map[key]);
+                  },
+                ),
+              ],
+            )),
+          ),
+        ]);
+
+        rowList.add(user);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }, onError: (error) {
+      print(error);
+    });
+  }
+
+  void _fetchEvents() async {
+    // final snapshot = await FirebaseDatabase.instance.ref('TvWebApp').get();
+    isLoading = true;
+    columnList.clear();
+    currentText = TEXT_VIEW_ALL_EVENTS;
+
+    addButtonText = 'Add Event';
+    isAddButtonVisible = true;
+
+    columnList.add(DataColumn(label: columnText('ID')));
+    columnList.add(DataColumn(label: columnText('Name')));
+    columnList.add(DataColumn(label: columnText('Category')));
+    columnList.add(DataColumn(label: columnText('Country')));
+    columnList.add(DataColumn(label: columnText('Hidden')));
+    columnList.add(DataColumn(label: columnText('Image')));
+    columnList.add(DataColumn(label: columnText('Streaming Links')));
+    columnList.add(DataColumn(label: columnText('Actions')));
+
+    databaseReference.child(CHILD_EVENTS).onValue.listen((event) {
+      if (currentText != TEXT_VIEW_ALL_EVENTS) return;
+
+      rowList.clear();
+      for (final child in event.snapshot.children) {
+        final map = child.value as Map<dynamic, dynamic>;
+
+        print(child.value);
+        print(map['id']);
+        print(map['name']);
+        print(map['category']);
+        print(map['country']);
+        print(map['isHidden']);
+        print(map['image_url']);
+        print(map['streaming_link']);
+
+        //"id": number,
+        //                       "name": "Name $number",
+        //                       "category": "Category $number",
+        //                       "country": "Country $number",
+        //                       "isHidden": false,
+        //                       "image_url": "https://url$number.com",
+        //                       "streaming_link": "data $number",
+
+        final user = DataRow(cells: <DataCell>[
+          DataCell(Center(child: Text(map['id'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['name'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['category'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['country'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['isHidden'].toString() ?? ''))),
+          DataCell(Center(
+              child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Image.network(
+              'https://picsum.photos/250?image=9', //map['image_url'].toString() ?? '',
+              width: 70,
+              height: 70,
+            ),
+          ))),
+          DataCell(
+            Center(
+                child: InkWell(
+              child: Icon(
+                Icons.remove_red_eye_outlined,
+                color: Colors.green,
+                size: 20,
+              ),
+              onTap: () {
+                print(map['streaming_link'].toString() ?? '');
+                // number++;
+                // databaseReference.child(CHILD_TOKENS)
+                //     .push().set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                // databaseReference.child(child.key.toString()).remove();
+                /*setState(() {
+                  _fetchUsers();
+                });*/
+                // rowList.remove(map[key]);
+              },
+            )),
+          ),
+          DataCell(
+            Center(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                InkWell(
+                  child: Icon(
+                    Icons.edit_outlined,
+                    color: Colors.blue,
+                    size: 20,
+                  ),
+                  onTap: () {
+                    print(child.key ?? '');
+                    // number++;
+                    // databaseReference.child(CHILD_TOKENS)
+                    //     .push().set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                    // databaseReference.child(child.key.toString()).remove();
+                    /*setState(() {
+                  _fetchUsers();
+                });*/
+                    // rowList.remove(map[key]);
+                  },
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                InkWell(
+                  child: Icon(
+                    Icons.delete_outlined,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                  onTap: () {
+                    print(child.key ?? '');
+                    // number++;
+                    // databaseReference.child(CHILD_TOKENS)
+                    //     .push().set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                    // databaseReference.child(child.key.toString()).remove();
+                    /*setState(() {
+                  _fetchUsers();
+                });*/
+                    // rowList.remove(map[key]);
+                  },
+                ),
+              ],
+            )),
+          ),
+        ]);
+
+        rowList.add(user);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }, onError: (error) {
+      print(error);
+    });
+  }
+
+  void _fetchChannelCountries() async {
+    // final snapshot = await FirebaseDatabase.instance.ref('TvWebApp').get();
+    isLoading = true;
+    columnList.clear();
+    currentText = TEXT_CHANNEL_COUNTRIES;
+
+    isAddButtonVisible = false;
+
+    columnList.add(DataColumn(label: columnText('ID')));
+    columnList.add(DataColumn(label: columnText('Name')));
+    columnList.add(DataColumn(label: columnText('Actions')));
+
+    databaseReference.child(CHILD_CHANNEL_COUNTRIES).onValue.listen((event) {
+      if (currentText != TEXT_CHANNEL_COUNTRIES) return;
+
+      rowList.clear();
+      for (final child in event.snapshot.children) {
+        final map = child.value as Map<dynamic, dynamic>;
+
+        print(child.value);
+        print(map['id']);
+        print(map['name']);
+
+        final user = DataRow(cells: <DataCell>[
+          DataCell(Center(child: Text(map['id'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['name'].toString() ?? ''))),
+          DataCell(
+            InkWell(
+              child: Center(
+                  child: Icon(
+                Icons.edit_outlined,
+                color: Colors.blue,
+                size: 20,
+              )),
+              onTap: () {
+                print(child.key ?? '');
+                // number++;
+                // databaseReference
+                //     .child(CHILD_TOKENS)
+                //     .push()
+                //     .set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                // databaseReference.child(child.key.toString()).remove();
+                /*setState(() {
+                  _fetchUsers();
+                });*/
+                // rowList.remove(map[key]);
+              },
+            ),
+          ),
+        ]);
+
+        rowList.add(user);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }, onError: (error) {
+      print(error);
+    });
+  }
+
+  void _fetchChannelCategories() async {
+    // final snapshot = await FirebaseDatabase.instance.ref('TvWebApp').get();
+    isLoading = true;
+    columnList.clear();
+    currentText = TEXT_CHANNEL_CATEGORIES;
+
+    isAddButtonVisible = false;
+
+    columnList.add(DataColumn(label: columnText('ID')));
+    columnList.add(DataColumn(label: columnText('Name')));
+    columnList.add(DataColumn(label: columnText('Actions')));
+
+    databaseReference.child(CHILD_CHANNEL_CATEGORIES).onValue.listen((event) {
+      if (currentText != TEXT_CHANNEL_CATEGORIES) return;
+
+      rowList.clear();
+      for (final child in event.snapshot.children) {
+        final map = child.value as Map<dynamic, dynamic>;
+
+        print(child.value);
+        print(map['id']);
+        print(map['name']);
+
+        final user = DataRow(cells: <DataCell>[
+          DataCell(Center(child: Text(map['id'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['name'].toString() ?? ''))),
+          DataCell(
+            InkWell(
+              child: Center(
+                  child: Icon(
+                Icons.edit_outlined,
+                color: Colors.blue,
+                size: 20,
+              )),
+              onTap: () {
+                print(child.key ?? '');
+                // number++;
+                // databaseReference
+                //     .child(CHILD_TOKENS)
+                //     .push()
+                //     .set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                // databaseReference.child(child.key.toString()).remove();
+                /*setState(() {
+                  _fetchUsers();
+                });*/
+                // rowList.remove(map[key]);
+              },
+            ),
+          ),
+        ]);
+
+        rowList.add(user);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }, onError: (error) {
+      print(error);
+    });
+  }
+
+  void _fetchEventCountries() async {
+    // final snapshot = await FirebaseDatabase.instance.ref('TvWebApp').get();
+    isLoading = true;
+    columnList.clear();
+    currentText = TEXT_EVENT_COUNTRIES;
+
+    isAddButtonVisible = false;
+
+    columnList.add(DataColumn(label: columnText('ID')));
+    columnList.add(DataColumn(label: columnText('Name')));
+    columnList.add(DataColumn(label: columnText('Actions')));
+
+    databaseReference.child(CHILD_EVENT_COUNTRIES).onValue.listen((event) {
+      if (currentText != TEXT_EVENT_COUNTRIES) return;
+
+      rowList.clear();
+      for (final child in event.snapshot.children) {
+        final map = child.value as Map<dynamic, dynamic>;
+
+        print(child.value);
+        print(map['id']);
+        print(map['name']);
+
+        final user = DataRow(cells: <DataCell>[
+          DataCell(Center(child: Text(map['id'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['name'].toString() ?? ''))),
+          DataCell(
+            InkWell(
+              child: Center(
+                  child: Icon(
+                Icons.edit_outlined,
+                color: Colors.blue,
+                size: 20,
+              )),
+              onTap: () {
+                print(child.key ?? '');
+                // number++;
+                // databaseReference
+                //     .child(CHILD_TOKENS)
+                //     .push()
+                //     .set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                // databaseReference.child(child.key.toString()).remove();
+                /*setState(() {
+                  _fetchUsers();
+                });*/
+                // rowList.remove(map[key]);
+              },
+            ),
+          ),
+        ]);
+
+        rowList.add(user);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }, onError: (error) {
+      print(error);
+    });
+  }
+
+  void _fetchEventCategories() async {
+    // final snapshot = await FirebaseDatabase.instance.ref('TvWebApp').get();
+    isLoading = true;
+    columnList.clear();
+    currentText = TEXT_EVENT_CATEGORIES;
+
+    isAddButtonVisible = false;
+
+    columnList.add(DataColumn(label: columnText('ID')));
+    columnList.add(DataColumn(label: columnText('Name')));
+    columnList.add(DataColumn(label: columnText('Actions')));
+
+    databaseReference.child(CHILD_EVENT_CATEGORIES).onValue.listen((event) {
+      if (currentText != TEXT_EVENT_CATEGORIES) return;
+
+      rowList.clear();
+      for (final child in event.snapshot.children) {
+        final map = child.value as Map<dynamic, dynamic>;
+
+        print(child.value);
+        print(map['id']);
+        print(map['name']);
+
+        final user = DataRow(cells: <DataCell>[
+          DataCell(Center(child: Text(map['id'].toString() ?? ''))),
+          DataCell(Center(child: Text(map['name'].toString() ?? ''))),
+          DataCell(
+            InkWell(
+              child: Center(
+                  child: Icon(
+                Icons.edit_outlined,
+                color: Colors.blue,
+                size: 20,
+              )),
+              onTap: () {
+                print(child.key ?? '');
+                // number++;
+                // databaseReference
+                //     .child(CHILD_TOKENS)
+                //     .push()
+                //     .set({"id": number, "url": "https://tokenurl$number.com/token.php"});
+                // databaseReference.child(child.key.toString()).remove();
+                /*setState(() {
+                  _fetchUsers();
+                });*/
+                // rowList.remove(map[key]);
+              },
+            ),
+          ),
+        ]);
+
+        rowList.add(user);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }, onError: (error) {
+      print(error);
+    });
   }
 
   @override
@@ -107,46 +724,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Column(
                         children: [
                           topBar(context),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20, left: 30),
-                            child: Align(
-                              child: Text(
-                                currentText,
-                                style: TextStyle(fontSize: 25, color: Colors.black),
-                              ),
-                              alignment: Alignment.centerLeft,
-                            ),
-                          ),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.vertical,
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: ConstrainedBox(
-                                  constraints:
-                                      BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                                  child: DataTable(
-                                      dataRowColor: MaterialStateProperty.all<Color>(Colors.grey.shade50),
-                                      headingRowColor: MaterialStateProperty.all<Color>(Colors.white),
-                                      headingRowHeight: 30,
-                                      dataRowHeight: 30,
-                                      columns: [
-                                        DataColumn(
-                                          label: columnText('No.'),
-                                          numeric: true,
-                                        ),
-                                        DataColumn(
-                                          label: columnText('Device IDs'),
-                                        ),
-                                        DataColumn(
-                                          label: columnText('Actions'),
-                                        ),
-                                      ],
-                                      rows: rowList),
+                          currentTextOfBar(),
+                          isLoading
+                              ? CircularProgressIndicator()
+                              : Expanded(
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.vertical,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: ConstrainedBox(
+                                        constraints:
+                                            BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                                        child: DataTable(
+                                            dataRowColor:
+                                                MaterialStateProperty.all<Color>(Colors.grey.shade50),
+                                            headingRowColor:
+                                                MaterialStateProperty.all<Color>(Colors.white),
+                                            headingRowHeight: 30,
+                                            // dataRowHeight: 30,
+                                            columns: columnList,
+                                            rows: rowList),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -155,6 +756,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Padding currentTextOfBar() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, left: 30, right: 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Align(
+            child: Text(
+              currentText,
+              style: TextStyle(fontSize: 25, color: Colors.black),
+            ),
+            alignment: Alignment.centerLeft,
+          ),
+          if (isAddButtonVisible)
+            OutlinedButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+              child: Text(
+                addButtonText,
+                style: TextStyle(color: Colors.blue, fontSize: 12, decoration: TextDecoration.none),
+              ),
+            )
         ],
       ),
     );
@@ -232,7 +862,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      currentText = 'Users';
+                      _fetchUsers();
                     });
                   },
                   child: Row(
@@ -246,8 +876,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         width: 5,
                       ),
                       Text(
-                        'Users',
-                        style: currentText == 'Users' ? textStyleBold() : textStyleNormal(),
+                        TEXT_USERS,
+                        style: currentText == TEXT_USERS ? textStyleBold() : textStyleNormal(),
                       ),
                     ],
                   ),
@@ -257,7 +887,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    currentText = 'Tokens';
+                    _fetchTokens();
                   });
                 },
                 child: Padding(
@@ -272,8 +902,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       SizedBox(
                         width: 5,
                       ),
-                      Text('Tokens',
-                          style: currentText == 'Tokens' ? textStyleBold() : textStyleNormal()),
+                      Text(TEXT_TOKENS,
+                          style: currentText == TEXT_TOKENS ? textStyleBold() : textStyleNormal()),
                     ],
                   ),
                 ),
@@ -299,8 +929,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         width: 5,
                       ),
                       Text(
-                        'Channels',
-                        style: currentText == 'Channels' ? textStyleBold() : textStyleNormal(),
+                        TEXT_CHANNELS,
+                        style: currentText == TEXT_CHANNELS ? textStyleBold() : textStyleNormal(),
                       ),
                     ],
                   ),
@@ -309,7 +939,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            currentText = 'View All Channels';
+                            _fetchChannels();
                           });
                         },
                         child: Row(
@@ -318,8 +948,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               dimension: 15,
                             ),
                             Text(
-                              'View All Channels',
-                              style: currentText == 'View All Channels'
+                              TEXT_VIEW_ALL_CHANNELS,
+                              style: currentText == TEXT_VIEW_ALL_CHANNELS
                                   ? textStyleBold()
                                   : textStyleNormal(),
                             ),
@@ -329,7 +959,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            currentText = 'Channel Countries';
+                            _fetchChannelCountries();
                           });
                         },
                         child: Padding(
@@ -340,8 +970,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 dimension: 15,
                               ),
                               Text(
-                                'Channel Countries',
-                                style: currentText == 'Channel Countries'
+                                TEXT_CHANNEL_COUNTRIES,
+                                style: currentText == TEXT_CHANNEL_COUNTRIES
                                     ? textStyleBold()
                                     : textStyleNormal(),
                               ),
@@ -352,7 +982,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            currentText = 'Channel Categories';
+                            _fetchChannelCategories();
                           });
                         },
                         child: Row(
@@ -361,8 +991,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               dimension: 15,
                             ),
                             Text(
-                              'Channel Categories',
-                              style: currentText == 'Channel Categories'
+                              TEXT_CHANNEL_CATEGORIES,
+                              style: currentText == TEXT_CHANNEL_CATEGORIES
                                   ? textStyleBold()
                                   : textStyleNormal(),
                             ),
@@ -392,8 +1022,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         width: 5,
                       ),
                       Text(
-                        'Events',
-                        style: currentText == 'Events' ? textStyleBold() : textStyleNormal(),
+                        TEXT_EVENTS,
+                        style: currentText == TEXT_EVENTS ? textStyleBold() : textStyleNormal(),
                       ),
                     ],
                   ),
@@ -402,7 +1032,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            currentText = 'View All Events';
+                            _fetchEvents();
                           });
                         },
                         child: Row(
@@ -411,9 +1041,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               dimension: 15,
                             ),
                             Text(
-                              'View All Events',
-                              style:
-                                  currentText == 'View All Events' ? textStyleBold() : textStyleNormal(),
+                              TEXT_VIEW_ALL_EVENTS,
+                              style: currentText == TEXT_VIEW_ALL_EVENTS
+                                  ? textStyleBold()
+                                  : textStyleNormal(),
                             ),
                           ],
                         ),
@@ -421,7 +1052,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            currentText = 'Events Countries';
+                            _fetchEventCountries();
                           });
                         },
                         child: Padding(
@@ -432,8 +1063,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 dimension: 15,
                               ),
                               Text(
-                                'Events Countries',
-                                style: currentText == 'Events Countries'
+                                TEXT_EVENT_COUNTRIES,
+                                style: currentText == TEXT_EVENT_COUNTRIES
                                     ? textStyleBold()
                                     : textStyleNormal(),
                               ),
@@ -444,7 +1075,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            currentText = 'Events Categories';
+                            _fetchEventCategories();
                           });
                         },
                         child: Row(
@@ -453,8 +1084,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               dimension: 15,
                             ),
                             Text(
-                              'Events Categories',
-                              style: currentText == 'Events Categories'
+                              TEXT_EVENT_CATEGORIES,
+                              style: currentText == TEXT_EVENT_CATEGORIES
                                   ? textStyleBold()
                                   : textStyleNormal(),
                             ),
@@ -469,7 +1100,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    currentText = 'Scraping';
+                    currentText = TEXT_SCRAPING;
+
+                    isAddButtonVisible = false;
                   });
                 },
                 child: Padding(
@@ -484,8 +1117,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       SizedBox(
                         width: 5,
                       ),
-                      Text('Scraping',
-                          style: currentText == 'Scraping' ? textStyleBold() : textStyleNormal()),
+                      Text(TEXT_SCRAPING,
+                          style: currentText == TEXT_SCRAPING ? textStyleBold() : textStyleNormal()),
                     ],
                   ),
                 ),
@@ -497,3 +1130,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
+/*final map = snapshot.value as Map<dynamic, dynamic>;
+
+    map.forEach((key, value) {
+      print(value.toString());
+      print(value.length);
+
+      // });
+    });
+
+    print(_currentList.length);
+    print(rowList.length);
+
+    setState(() {
+      rowList.clear();
+      rowList = _currentList;
+      print(rowList.length);
+    });*/
