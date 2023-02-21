@@ -835,17 +835,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Expanded sideBarOptions() {
-    return Expanded(
-      flex: 1,
-      child: Container(
-        color: Colors.white,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: Column(
-            children: [
-              //DASHBOARD
-              Text(
+  Container sideBarOptions() {
+    return Container(
+      color: Colors.white,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            //DASHBOARD
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
                 'Dashboard',
                 style: TextStyle(
                     color: Colors.black,
@@ -853,278 +855,276 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     fontSize: 25,
                     decoration: TextDecoration.none),
               ),
-              SizedBox(
-                height: 40,
-              ),
-              //USERS
-              Padding(
-                padding: const EdgeInsets.only(left: 8, bottom: 5),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _fetchUsers();
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.person_outline,
-                        color: Colors.black45,
-                        size: 15,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        TEXT_USERS,
-                        style: currentText == TEXT_USERS ? textStyleBold() : textStyleNormal(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              //TOKENS
-              GestureDetector(
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            //USERS
+            Padding(
+              padding: const EdgeInsets.only(left: 8, bottom: 5),
+              child: InkWell(
                 onTap: () {
                   setState(() {
-                    _fetchTokens();
+                    _fetchUsers();
                   });
                 },
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.note_alt_outlined,
-                        color: Colors.black45,
-                        size: 15,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(TEXT_TOKENS,
-                          style: currentText == TEXT_TOKENS ? textStyleBold() : textStyleNormal()),
-                    ],
-                  ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      color: Colors.black45,
+                      size: 15,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      TEXT_USERS,
+                      style: currentText == TEXT_USERS ? textStyleBold() : textStyleNormal(),
+                    ),
+                  ],
                 ),
               ),
-              //CHANNELS
-              Padding(
+            ),
+            //TOKENS
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _fetchTokens();
+                });
+              },
+              child: Padding(
                 padding: const EdgeInsets.only(left: 8),
-                child: ConfigurableExpansionTile(
-                  animatedWidgetFollowingHeader: Icon(
-                    Icons.expand_more,
-                    color: Color(0xFF707070),
-                  ),
-                  header: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.videocam_outlined,
-                        color: Colors.black45,
-                        size: 15,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        TEXT_CHANNELS,
-                        style: currentText == TEXT_CHANNELS ? textStyleBold() : textStyleNormal(),
-                      ),
-                    ],
-                  ),
-                  childrenBody: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _fetchChannels();
-                          });
-                        },
-                        child: Row(
-                          children: [
-                            SizedBox.square(
-                              dimension: 15,
-                            ),
-                            Text(
-                              TEXT_VIEW_ALL_CHANNELS,
-                              style: currentText == TEXT_VIEW_ALL_CHANNELS
-                                  ? textStyleBold()
-                                  : textStyleNormal(),
-                            ),
-                          ],
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _fetchChannelCountries();
-                          });
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Row(
-                            children: [
-                              SizedBox.square(
-                                dimension: 15,
-                              ),
-                              Text(
-                                TEXT_CHANNEL_COUNTRIES,
-                                style: currentText == TEXT_CHANNEL_COUNTRIES
-                                    ? textStyleBold()
-                                    : textStyleNormal(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _fetchChannelCategories();
-                          });
-                        },
-                        child: Row(
-                          children: [
-                            SizedBox.square(
-                              dimension: 15,
-                            ),
-                            Text(
-                              TEXT_CHANNEL_CATEGORIES,
-                              style: currentText == TEXT_CHANNEL_CATEGORIES
-                                  ? textStyleBold()
-                                  : textStyleNormal(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.note_alt_outlined,
+                      color: Colors.black45,
+                      size: 15,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(TEXT_TOKENS,
+                        style: currentText == TEXT_TOKENS ? textStyleBold() : textStyleNormal()),
+                  ],
                 ),
               ),
-              // EVENTS
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: ConfigurableExpansionTile(
-                  animatedWidgetFollowingHeader: Icon(
-                    Icons.expand_more,
-                    color: Color(0xFF707070),
-                  ),
-                  header: Row(
-                    children: [
-                      Icon(
-                        Icons.event,
-                        color: Colors.black45,
-                        size: 15,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        TEXT_EVENTS,
-                        style: currentText == TEXT_EVENTS ? textStyleBold() : textStyleNormal(),
-                      ),
-                    ],
-                  ),
-                  childrenBody: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _fetchEvents();
-                          });
-                        },
-                        child: Row(
-                          children: [
-                            SizedBox.square(
-                              dimension: 15,
-                            ),
-                            Text(
-                              TEXT_VIEW_ALL_EVENTS,
-                              style: currentText == TEXT_VIEW_ALL_EVENTS
-                                  ? textStyleBold()
-                                  : textStyleNormal(),
-                            ),
-                          ],
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _fetchEventCountries();
-                          });
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Row(
-                            children: [
-                              SizedBox.square(
-                                dimension: 15,
-                              ),
-                              Text(
-                                TEXT_EVENT_COUNTRIES,
-                                style: currentText == TEXT_EVENT_COUNTRIES
-                                    ? textStyleBold()
-                                    : textStyleNormal(),
-                              ),
-                            ],
+            ),
+            //CHANNELS
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: ConfigurableExpansionTile(
+                animatedWidgetFollowingHeader: Icon(
+                  Icons.expand_more,
+                  color: Color(0xFF707070),
+                ),
+                header: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.videocam_outlined,
+                      color: Colors.black45,
+                      size: 15,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      TEXT_CHANNELS,
+                      style: currentText == TEXT_CHANNELS ? textStyleBold() : textStyleNormal(),
+                    ),
+                  ],
+                ),
+                childrenBody: Column(
+                  children: [
+                    InkWell(
+                      child: Row(
+                        children: [
+                          SizedBox.square(
+                            dimension: 15,
                           ),
-                        ),
+                          Text(
+                            TEXT_VIEW_ALL_CHANNELS,
+                            style: currentText == TEXT_VIEW_ALL_CHANNELS
+                                ? textStyleBold()
+                                : textStyleNormal(),
+                          ),
+                        ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _fetchEventCategories();
-                          });
-                        },
+                      onTap: () {
+                        setState(() {
+                          _fetchChannels();
+                        });
+                      },
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _fetchChannelCountries();
+                        });
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
                         child: Row(
                           children: [
                             SizedBox.square(
                               dimension: 15,
                             ),
                             Text(
-                              TEXT_EVENT_CATEGORIES,
-                              style: currentText == TEXT_EVENT_CATEGORIES
+                              TEXT_CHANNEL_COUNTRIES,
+                              style: currentText == TEXT_CHANNEL_COUNTRIES
                                   ? textStyleBold()
                                   : textStyleNormal(),
                             ),
                           ],
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _fetchChannelCategories();
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          SizedBox.square(
+                            dimension: 15,
+                          ),
+                          Text(
+                            TEXT_CHANNEL_CATEGORIES,
+                            style: currentText == TEXT_CHANNEL_CATEGORIES
+                                ? textStyleBold()
+                                : textStyleNormal(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              //SCRAPING
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    currentText = TEXT_SCRAPING;
+            ),
+            // EVENTS
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: ConfigurableExpansionTile(
+                animatedWidgetFollowingHeader: Icon(
+                  Icons.expand_more,
+                  color: Color(0xFF707070),
+                ),
+                header: Row(
+                  children: [
+                    Icon(
+                      Icons.event,
+                      color: Colors.black45,
+                      size: 15,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      TEXT_EVENTS,
+                      style: currentText == TEXT_EVENTS ? textStyleBold() : textStyleNormal(),
+                    ),
+                  ],
+                ),
+                childrenBody: Column(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _fetchEvents();
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          SizedBox.square(
+                            dimension: 15,
+                          ),
+                          Text(
+                            TEXT_VIEW_ALL_EVENTS,
+                            style:
+                                currentText == TEXT_VIEW_ALL_EVENTS ? textStyleBold() : textStyleNormal(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _fetchEventCountries();
+                        });
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          children: [
+                            SizedBox.square(
+                              dimension: 15,
+                            ),
+                            Text(
+                              TEXT_EVENT_COUNTRIES,
+                              style: currentText == TEXT_EVENT_COUNTRIES
+                                  ? textStyleBold()
+                                  : textStyleNormal(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _fetchEventCategories();
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          SizedBox.square(
+                            dimension: 15,
+                          ),
+                          Text(
+                            TEXT_EVENT_CATEGORIES,
+                            style: currentText == TEXT_EVENT_CATEGORIES
+                                ? textStyleBold()
+                                : textStyleNormal(),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            //SCRAPING
+            InkWell(
+              onTap: () {
+                setState(() {
+                  currentText = TEXT_SCRAPING;
 
-                    isAddButtonVisible = false;
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.search,
-                        color: Colors.black45,
-                        size: 15,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(TEXT_SCRAPING,
-                          style: currentText == TEXT_SCRAPING ? textStyleBold() : textStyleNormal()),
-                    ],
-                  ),
+                  isAddButtonVisible = false;
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.search,
+                      color: Colors.black45,
+                      size: 15,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(TEXT_SCRAPING,
+                        style: currentText == TEXT_SCRAPING ? textStyleBold() : textStyleNormal()),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

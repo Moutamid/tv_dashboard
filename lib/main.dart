@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tv_dashboard/Constants.dart';
-import 'package:tv_dashboard/dashboard_screen.dart';
+import 'package:tv_dashboard/dashboard/dashboard_screen.dart';
 import 'package:tv_dashboard/utils.dart';
 
 Future<void> main() async {
