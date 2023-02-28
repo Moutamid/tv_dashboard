@@ -20,11 +20,14 @@ const String CHILD_EVENT_CATEGORIES = 'EVENT_CATEGORIES';
 
 const String TEXT_USERS = 'Users';
 const String TEXT_TOKENS = 'Tokens';
+const String TEXT_ADD_TOKENS = 'Add Tokens';
 const String TEXT_CHANNELS = 'Channels';
+const String TEXT_ADD_CHANNELS = 'Add Channels';
 const String TEXT_VIEW_ALL_CHANNELS = 'View All Channels';
 const String TEXT_CHANNEL_COUNTRIES = 'Channel Countries';
 const String TEXT_CHANNEL_CATEGORIES = 'Channel Categories';
 const String TEXT_EVENTS = 'Events';
+const String TEXT_ADD_EVENTS = 'Add Events';
 const String TEXT_VIEW_ALL_EVENTS = 'View All Events';
 const String TEXT_EVENT_COUNTRIES = 'Events Countries';
 const String TEXT_EVENT_CATEGORIES = 'Events Categories';

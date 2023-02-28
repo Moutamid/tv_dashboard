@@ -44,3 +44,34 @@ showToast(BuildContext context, Color color, String data) {
         );
       });
 }
+
+class FormTextField extends StatelessWidget {
+  String text;
+  TextEditingController editingController;
+
+  FormTextField(this.text, this.editingController);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 30,
+      child: TextField(
+        controller: editingController,
+        decoration: InputDecoration(
+          border: null,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(width: 0.2, strokeAlign: 0.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.blue.shade900,
+              width: 0.2,
+            ),
+          ),
+          hintText: text,
+          contentPadding: EdgeInsets.all(12),
+        ),
+      ),
+    );
+  }
+}

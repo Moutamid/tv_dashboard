@@ -1,6 +1,8 @@
 import 'package:configurable_expansion_tile_null_safety/configurable_expansion_tile_null_safety.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tv_dashboard/Constants.dart';
+import 'package:tv_dashboard/dashboard/AddTokenFormScreen.dart';
 import 'package:tv_dashboard/main.dart';
 import 'package:tv_dashboard/utils.dart';
 
@@ -10,6 +12,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  final addTokenFormScreenKey = GlobalKey<_AddTokenFormScreenState>();
+
   String currentText = TEXT_USERS;
 
   bool isLoading = true;
@@ -20,6 +24,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   bool isAddButtonVisible = false;
   String addButtonText = 'null';
+
+  String current_token_id = '';
+  String current_token_url = '';
+  String current_token_push_key = '';
 
   @override
   void initState() {
@@ -65,16 +73,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               )),
               onTap: () {
                 print(child.key ?? '');
-                // number++;
-                // databaseReference
-                //     .child(CHILD_TOKENS)
-                //     .push()
-                //     .set({"id": number, "url": "https://tokenurl$number.com/token.php"});
-                // databaseReference.child(child.key.toString()).remove();
-                /*setState(() {
-                  _fetchUsers();
-                });*/
-                // rowList.remove(map[key]);
+                databaseReference.child(CHILD_USERS).child(child.key.toString()).remove();
               },
             ),
           ),
@@ -96,7 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     columnList.clear();
     currentText = TEXT_TOKENS;
 
-    addButtonText = 'Add Tokens';
+    addButtonText = TEXT_ADD_TOKENS;
     isAddButtonVisible = true;
 
     columnList.add(DataColumn(label: columnText('ID')));
@@ -131,6 +130,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   onTap: () {
                     print(child.key ?? '');
+                    isAddButtonVisible = false;
+                    current_token_id = map['id'].toString();
+                    current_token_url = map['url'].toString();
+                    current_token_push_key = child.key.toString();
+                    setState(() {
+                      currentText = addButtonText;
+                    });
                     /* number++;
                     databaseReference.child(CHILD_CHANNELS).push().set({
                       "id": number,
@@ -162,7 +168,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     // number++;
                     // databaseReference.child(CHILD_TOKENS)
                     //     .push().set({"id": number, "url": "https://tokenurl$number.com/token.php"});
-                    // databaseReference.child(child.key.toString()).remove();
+                    databaseReference.child(CHILD_TOKENS).child(child.key.toString()).remove();
                     /*setState(() {
                   _fetchUsers();
                 });*/
@@ -190,7 +196,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     columnList.clear();
     currentText = TEXT_VIEW_ALL_CHANNELS;
 
-    addButtonText = 'Add Channel';
+    addButtonText = TEXT_ADD_CHANNELS;
     isAddButtonVisible = true;
 
     columnList.add(DataColumn(label: columnText('ID')));
@@ -328,7 +334,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     columnList.clear();
     currentText = TEXT_VIEW_ALL_EVENTS;
 
-    addButtonText = 'Add Event';
+    addButtonText = TEXT_ADD_EVENTS;
     isAddButtonVisible = true;
 
     columnList.add(DataColumn(label: columnText('ID')));
@@ -727,27 +733,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           currentTextOfBar(),
                           isLoading
                               ? CircularProgressIndicator()
-                              : Expanded(
-                                  child: SingleChildScrollView(
-                                    scrollDirection: Axis.vertical,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(20),
-                                      child: ConstrainedBox(
-                                        constraints:
-                                            BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                                        child: DataTable(
-                                            dataRowColor:
-                                                MaterialStateProperty.all<Color>(Colors.grey.shade50),
-                                            headingRowColor:
-                                                MaterialStateProperty.all<Color>(Colors.white),
-                                            headingRowHeight: 30,
-                                            // dataRowHeight: 30,
-                                            columns: columnList,
-                                            rows: rowList),
+                              : (currentText == TEXT_ADD_TOKENS ||
+                                      currentText == TEXT_ADD_CHANNELS ||
+                                      currentText == TEXT_ADD_EVENTS)
+                                  ? Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20),
+                                        child: Column(
+                                          children: [
+                                            if (currentText == TEXT_ADD_TOKENS)
+                                              AddTokenFormScreen(
+                                                  key: addTokenFormScreenKey,
+                                                  current_token_id: current_token_id,
+                                                  current_token_url: current_token_url,
+                                                  current_token_push_key: current_token_push_key,
+                                                  currentText: currentText,
+                                                  isAddButtonVisible: isAddButtonVisible),
+                                            if (currentText == TEXT_ADD_CHANNELS) addChannelForm(),
+                                            if (currentText == TEXT_ADD_EVENTS) addChannelForm(),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ),
+                                    )
+                                  // DATA CELLS
+                                  : Expanded(
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.vertical,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                minWidth: MediaQuery.of(context).size.width),
+                                            child: DataTable(
+                                                dataRowColor:
+                                                    MaterialStateProperty.all<Color>(Colors.grey.shade50),
+                                                headingRowColor:
+                                                    MaterialStateProperty.all<Color>(Colors.white),
+                                                headingRowHeight: 30,
+                                                // dataRowHeight: 30,
+                                                columns: columnList,
+                                                rows: rowList),
+                                          ),
+                                        ),
+                                      ),
+                                    )
                         ],
                       ),
                     ),
@@ -758,6 +787,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Column addChannelForm() {
+    final TextEditingController _controllerChannelName = TextEditingController();
+
+    return Column(
+      children: [
+        FormTextField('Channel name', _controllerChannelName),
+        SizedBox(
+          height: 40,
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: OutlinedButton(
+            onPressed: () {
+              String data = _controllerChannelName.text;
+              print('URl: $data');
+            },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            ),
+            child: Text(
+              'Add',
+              style: TextStyle(color: Colors.blue, fontSize: 12, decoration: TextDecoration.none),
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -776,7 +834,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           if (isAddButtonVisible)
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  isAddButtonVisible = false;
+                  currentText = addButtonText;
+                  if (currentText == TEXT_ADD_TOKENS) {
+                    current_token_id = '';
+                    current_token_url = '';
+                    current_token_push_key = '';
+                  }
+                });
+              },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
               ),
@@ -1130,6 +1198,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
+
 /*final map = snapshot.value as Map<dynamic, dynamic>;
 
     map.forEach((key, value) {
