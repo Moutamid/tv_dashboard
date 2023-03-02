@@ -2,6 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'Constants.dart';
+
 DatabaseReference databaseReference = FirebaseDatabase.instance.ref().child('TvWebApp');
 
 showToast(BuildContext context, Color color, String data) {
@@ -74,4 +76,12 @@ class FormTextField extends StatelessWidget {
       ),
     );
   }
+}
+
+Expanded columnText(String text) {
+  return Expanded(
+    child: Center(
+      child: Text(text, style: textStyleBold(), textAlign: TextAlign.center),
+    ),
+  );
 }
